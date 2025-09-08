@@ -19,8 +19,11 @@
 package appeng.fluids.client.gui;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.lwjgl.input.Mouse;
 
@@ -28,6 +31,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.Loader;
 
 import appeng.api.config.Settings;
 import appeng.api.storage.ITerminalHost;
@@ -48,6 +53,7 @@ import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketInventoryAction;
 import appeng.core.sync.packets.PacketValueConfig;
 import appeng.fluids.container.ContainerFluidTerminal;
+import appeng.fluids.container.slots.IMEFluidSlot;
 import appeng.helpers.InventoryAction;
 import appeng.util.IConfigManagerHost;
 import appeng.util.Platform;
@@ -150,6 +156,37 @@ public class GuiFluidTerminal extends AEBaseMEGui implements ISortSource, IConfi
     public void updateScreen() {
         this.repo.setPower(this.container.isPowered());
         super.updateScreen();
+    }
+
+    @Override
+    protected void renderHoveredToolTip(int mouseX, int mouseY) {
+        final Slot slot = this.getSlot(mouseX, mouseY);
+
+        if (slot != null && slot instanceof IMEFluidSlot && slot.isEnabled()) {
+            final IMEFluidSlot fluidSlot = (IMEFluidSlot) slot;
+
+            if (fluidSlot.getAEFluidStack() != null && fluidSlot.shouldRenderAsFluid()) {
+                final IAEFluidStack fluidStack = fluidSlot.getAEFluidStack();
+                final String formattedAmount = NumberFormat.getNumberInstance(Locale.US)
+                        .format(fluidStack.getStackSize() / 1000.0) + " B";
+
+                final String modName = "" + TextFormatting.BLUE + TextFormatting.ITALIC + Loader.instance()
+                        .getIndexedModList()
+                        .get(Platform.getModId(fluidStack))
+                        .getName();
+
+                final List<String> list = new ArrayList<>();
+
+                list.add(fluidStack.getFluidStack().getLocalizedName());
+                list.add(formattedAmount);
+                list.add(modName);
+
+                this.drawHoveringText(list, mouseX, mouseY);
+
+                return;
+            }
+        }
+        super.renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override

@@ -72,7 +72,7 @@ import appeng.client.gui.widgets.ITooltip;
 import appeng.client.me.InternalSlotME;
 import appeng.client.me.SlotDisconnected;
 import appeng.client.me.SlotME;
-import appeng.client.render.AEStackSizeRenderer;
+import appeng.client.render.StackSizeRenderer;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.*;
 import appeng.container.slot.AppEngSlot.hasCalculatedValidness;
@@ -81,6 +81,7 @@ import appeng.core.AppEng;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketInventoryAction;
 import appeng.core.sync.packets.PacketSwapSlots;
+import appeng.fluids.client.render.FluidStackSizeRenderer;
 import appeng.fluids.container.slots.IMEFluidSlot;
 import appeng.helpers.InventoryAction;
 import appeng.items.misc.ItemEncodedPattern;
@@ -92,7 +93,8 @@ public abstract class AEBaseGui extends GuiContainer implements IMTModGuiContain
     private final List<InternalSlotME> meSlots = new ArrayList<>();
     // drag y
     private final Set<Slot> drag_click = new HashSet<>();
-    private final AEStackSizeRenderer stackSizeRenderer = new AEStackSizeRenderer();
+    private final StackSizeRenderer stackSizeRenderer = new StackSizeRenderer();
+    private final FluidStackSizeRenderer fluidStackSizeRenderer = new FluidStackSizeRenderer();
     private GuiScrollbar myScrollBar = null;
     private boolean disableShiftClick = false;
     private Stopwatch dbl_clickTimer = Stopwatch.createStarted();
@@ -806,172 +808,8 @@ public abstract class AEBaseGui extends GuiContainer implements IMTModGuiContain
     @Override
     public void drawSlot(Slot s) {
         if (s instanceof SlotME) {
-            drawMESlot((SlotME) s);
-        } else if (s instanceof IMEFluidSlot && ((IMEFluidSlot) s).shouldRenderAsFluid()) {
-            drawMEFluidSlot(s, (IMEFluidSlot) s);
-        } else {
-            drawRegularSlot(s);
-        }
-    }
 
-    private void drawMESlot(SlotME slot) {
-        try {
-            this.zLevel = 100.0F;
-            this.itemRender.zLevel = 100.0F;
-
-            if (!this.isPowered()) {
-                drawRect(slot.xPos, slot.yPos, 16 + slot.xPos, 16 + slot.yPos, 0x66111111);
-            }
-
-            this.zLevel = 0.0F;
-            this.itemRender.zLevel = 0.0F;
-
-            // Annoying but easier than trying to splice into render item
-            super.drawSlot(new Size1Slot(slot));
-
-            this.stackSizeRenderer.renderStackSize(this.fontRenderer, slot.getAEStack(), slot.xPos, slot.yPos);
-
-        } catch (final Exception err) {
-            AELog.warn("[AppEng] AE prevented crash while drawing slot: " + err);
-        }
-    }
-
-    private void drawMEFluidSlot(Slot slot, IMEFluidSlot imeFluidSlot) {
-        final IAEFluidStack fs = imeFluidSlot.getAEFluidStack();
-
-        if (fs != null && this.isPowered()) {
-            GlStateManager.disableLighting();
-            GlStateManager.disableBlend();
-            final Fluid fluid = fs.getFluid();
-            Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-            final TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks()
-                    .getAtlasSprite(fluid.getStill().toString());
-
-            // Set color for dynamic fluids
-            // Convert int color to RGB
-            float red = (fluid.getColor() >> 16 & 255) / 255.0F;
-            float green = (fluid.getColor() >> 8 & 255) / 255.0F;
-            float blue = (fluid.getColor() & 255) / 255.0F;
-            GlStateManager.color(red, green, blue);
-
-            this.drawTexturedModalRect(slot.xPos, slot.yPos, sprite, 16, 16);
-            GlStateManager.enableLighting();
-            GlStateManager.enableBlend();
-
-            this.stackSizeRenderer.renderStackSize(this.fontRenderer, fs, slot.xPos, slot.yPos);
-        } else if (!this.isPowered()) {
-            drawRect(slot.xPos, slot.yPos, 16 + slot.xPos, 16 + slot.yPos, 0x66111111);
-        }
-    }
-
-    private void drawRegularSlot(Slot s) {
-        try {
-            final ItemStack is = s.getStack();
-
-            if (s instanceof AppEngSlot) {
-                drawAppEngSlotIcons((AppEngSlot) s);
-            }
-
-            if (!is.isEmpty() && s instanceof AppEngSlot) {
-                checkAndMarkItemValidity((AppEngSlot) s, is);
-            }
-
-            if (s instanceof SlotPlayerInv || s instanceof SlotPlayerHotBar) {
-                drawPlayerInventorySlot(s, is);
-            } else if (s instanceof AppEngSlot) {
-                drawAppEngSlot((AppEngSlot) s);
-            } else {
-                super.drawSlot(s);
-            }
-
-        } catch (final Exception err) {
-            AELog.warn("[AppEng] AE prevented crash while drawing slot: " + err);
-        }
-    }
-
-    private void drawAppEngSlotIcons(AppEngSlot aes) {
-        if ((aes.renderIconWithItem() || aes.getStack().isEmpty()) && aes.shouldDisplay()) {
-            if (aes.getIcon() >= 0) {
-                this.bindTexture("guis/states.png");
-
-                try {
-                    final int uv_y = (int) Math.floor(aes.getIcon() / 16);
-                    final int uv_x = aes.getIcon() - uv_y * 16;
-
-                    GlStateManager.enableBlend();
-                    GlStateManager.disableLighting();
-                    GlStateManager.enableTexture2D();
-                    GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-                    final float par1 = aes.xPos;
-                    final float par2 = aes.yPos;
-                    final float par3 = uv_x * 16;
-                    final float par4 = uv_y * 16;
-
-                    final Tessellator tessellator = Tessellator.getInstance();
-                    final BufferBuilder vb = tessellator.getBuffer();
-
-                    vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-
-                    final float f1 = 0.00390625F;
-                    final float f = 0.00390625F;
-                    final float par6 = 16;
-                    vb.pos(par1 + 0, par2 + par6, this.zLevel).tex((par3 + 0) * f, (par4 + par6) * f1)
-                            .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
-                    final float par5 = 16;
-                    vb.pos(par1 + par5, par2 + par6, this.zLevel).tex((par3 + par5) * f, (par4 + par6) * f1)
-                            .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
-                    vb.pos(par1 + par5, par2 + 0, this.zLevel).tex((par3 + par5) * f, (par4 + 0) * f1)
-                            .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
-                    vb.pos(par1 + 0, par2 + 0, this.zLevel).tex((par3 + 0) * f, (par4 + 0) * f1)
-                            .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
-                    tessellator.draw();
-
-                } catch (final Exception err) {
-                    //
-                }
-            }
-        }
-    }
-
-    private void checkAndMarkItemValidity(AppEngSlot aes, ItemStack is) {
-        if (aes.getIsValid() == hasCalculatedValidness.NotAvailable) {
-            boolean isValid = aes.isItemValid(is) || aes instanceof SlotOutput
-                    || aes instanceof AppEngCraftingSlot || aes instanceof SlotDisabled
-                    || aes instanceof SlotInaccessible || aes instanceof SlotFake
-                    || aes instanceof SlotRestrictedInput || aes instanceof SlotDisconnected;
-            if (isValid && aes instanceof SlotRestrictedInput) {
-                try {
-                    isValid = ((SlotRestrictedInput) aes).isValid(is, this.mc.world);
-                } catch (final Exception err) {
-                    AELog.debug(err);
-                }
-            }
-            aes.setIsValid(isValid ? hasCalculatedValidness.Valid : hasCalculatedValidness.Invalid);
-        }
-
-        if (aes.getIsValid() == hasCalculatedValidness.Invalid) {
-            this.zLevel = 100.0F;
-            this.itemRender.zLevel = 100.0F;
-
-            GlStateManager.disableLighting();
-            drawRect(aes.xPos, aes.yPos, 16 + aes.xPos, 16 + aes.yPos, 0x66ff6666);
-            GlStateManager.enableLighting();
-
-            this.zLevel = 0.0F;
-            this.itemRender.zLevel = 0.0F;
-        }
-    }
-
-    private void drawPlayerInventorySlot(Slot s, ItemStack is) {
-        if (!is.isEmpty() && is.getItem() instanceof ItemEncodedPattern) {
-            final ItemEncodedPattern iep = (ItemEncodedPattern) is.getItem();
-            final ItemStack out = iep.getOutput(is);
-            if (!out.isEmpty()) {
-                AppEngSlot appEngSlot = ((AppEngSlot) s);
-                appEngSlot.setDisplay(true);
-                appEngSlot.setReturnAsSingleStack(true);
-
+            try {
                 this.zLevel = 100.0F;
                 this.itemRender.zLevel = 100.0F;
 
@@ -983,74 +821,220 @@ public abstract class AEBaseGui extends GuiContainer implements IMTModGuiContain
                 this.itemRender.zLevel = 0.0F;
 
                 // Annoying but easier than trying to splice into render item
-                super.drawSlot(s);
+                super.drawSlot(new Size1Slot((SlotME) s));
 
-                if (isShiftKeyDown()) {
-                    this.stackSizeRenderer.renderStackSize(this.fontRenderer,
-                            AEItemStack.fromItemStack(out), s.xPos, s.yPos);
+                this.stackSizeRenderer.renderStackSize(this.fontRenderer, ((SlotME) s).getAEStack(), s.xPos, s.yPos);
+
+            } catch (final Exception err) {
+                AELog.warn("[AppEng] AE prevented crash while drawing slot: " + err);
+            }
+
+            return;
+        } else if (s instanceof IMEFluidSlot && ((IMEFluidSlot) s).shouldRenderAsFluid()) {
+            final IMEFluidSlot slot = (IMEFluidSlot) s;
+            final IAEFluidStack fs = slot.getAEFluidStack();
+
+            if (fs != null && this.isPowered()) {
+                GlStateManager.disableLighting();
+                GlStateManager.disableBlend();
+                final Fluid fluid = fs.getFluid();
+                Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+                final TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks()
+                        .getAtlasSprite(fluid.getStill().toString());
+
+                // Set color for dynamic fluids
+                // Convert int color to RGB
+                float red = (fluid.getColor() >> 16 & 255) / 255.0F;
+                float green = (fluid.getColor() >> 8 & 255) / 255.0F;
+                float blue = (fluid.getColor() & 255) / 255.0F;
+                GlStateManager.color(red, green, blue);
+
+                this.drawTexturedModalRect(s.xPos, s.yPos, sprite, 16, 16);
+                GlStateManager.enableLighting();
+                GlStateManager.enableBlend();
+
+                this.fluidStackSizeRenderer.renderStackSize(this.fontRenderer, fs, s.xPos, s.yPos);
+            } else if (!this.isPowered()) {
+                drawRect(s.xPos, s.yPos, 16 + s.xPos, 16 + s.yPos, 0x66111111);
+            }
+
+            return;
+        } else {
+            try {
+                final ItemStack is = s.getStack();
+                if (s instanceof AppEngSlot && (((AppEngSlot) s).renderIconWithItem() || is.isEmpty())
+                        && (((AppEngSlot) s).shouldDisplay())) {
+                    final AppEngSlot aes = (AppEngSlot) s;
+                    if (aes.getIcon() >= 0) {
+                        this.bindTexture("guis/states.png");
+
+                        try {
+                            final int uv_y = (int) Math.floor(aes.getIcon() / 16);
+                            final int uv_x = aes.getIcon() - uv_y * 16;
+
+                            GlStateManager.enableBlend();
+                            GlStateManager.disableLighting();
+                            GlStateManager.enableTexture2D();
+                            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+                            final float par1 = aes.xPos;
+                            final float par2 = aes.yPos;
+                            final float par3 = uv_x * 16;
+                            final float par4 = uv_y * 16;
+
+                            final Tessellator tessellator = Tessellator.getInstance();
+                            final BufferBuilder vb = tessellator.getBuffer();
+
+                            vb.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+
+                            final float f1 = 0.00390625F;
+                            final float f = 0.00390625F;
+                            final float par6 = 16;
+                            vb.pos(par1 + 0, par2 + par6, this.zLevel).tex((par3 + 0) * f, (par4 + par6) * f1)
+                                    .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
+                            final float par5 = 16;
+                            vb.pos(par1 + par5, par2 + par6, this.zLevel).tex((par3 + par5) * f, (par4 + par6) * f1)
+                                    .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
+                            vb.pos(par1 + par5, par2 + 0, this.zLevel).tex((par3 + par5) * f, (par4 + 0) * f1)
+                                    .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
+                            vb.pos(par1 + 0, par2 + 0, this.zLevel).tex((par3 + 0) * f, (par4 + 0) * f1)
+                                    .color(1.0f, 1.0f, 1.0f, aes.getOpacityOfIcon()).endVertex();
+                            tessellator.draw();
+
+                        } catch (final Exception err) {
+                        }
+                    }
+                }
+
+                if (!is.isEmpty() && s instanceof AppEngSlot) {
+                    if (((AppEngSlot) s).getIsValid() == hasCalculatedValidness.NotAvailable) {
+                        boolean isValid = s.isItemValid(is) || s instanceof SlotOutput
+                                || s instanceof AppEngCraftingSlot || s instanceof SlotDisabled
+                                || s instanceof SlotInaccessible || s instanceof SlotFake
+                                || s instanceof SlotRestrictedInput || s instanceof SlotDisconnected;
+                        if (isValid && s instanceof SlotRestrictedInput) {
+                            try {
+                                isValid = ((SlotRestrictedInput) s).isValid(is, this.mc.world);
+                            } catch (final Exception err) {
+                                AELog.debug(err);
+                            }
+                        }
+                        ((AppEngSlot) s)
+                                .setIsValid(isValid ? hasCalculatedValidness.Valid : hasCalculatedValidness.Invalid);
+                    }
+
+                    if (((AppEngSlot) s).getIsValid() == hasCalculatedValidness.Invalid) {
+                        this.zLevel = 100.0F;
+                        this.itemRender.zLevel = 100.0F;
+
+                        GlStateManager.disableLighting();
+                        drawRect(s.xPos, s.yPos, 16 + s.xPos, 16 + s.yPos, 0x66ff6666);
+                        GlStateManager.enableLighting();
+
+                        this.zLevel = 0.0F;
+                        this.itemRender.zLevel = 0.0F;
+                    }
+                }
+                if (s instanceof SlotPlayerInv || s instanceof SlotPlayerHotBar) {
+                    if (!is.isEmpty() && is.getItem() instanceof ItemEncodedPattern) {
+                        final ItemEncodedPattern iep = (ItemEncodedPattern) is.getItem();
+                        final ItemStack out = iep.getOutput(is);
+                        if (!out.isEmpty()) {
+                            AppEngSlot appEngSlot = ((AppEngSlot) s);
+                            appEngSlot.setDisplay(true);
+                            appEngSlot.setReturnAsSingleStack(true);
+
+                            this.zLevel = 100.0F;
+                            this.itemRender.zLevel = 100.0F;
+
+                            if (!this.isPowered()) {
+                                drawRect(s.xPos, s.yPos, 16 + s.xPos, 16 + s.yPos, 0x66111111);
+                            }
+
+                            this.zLevel = 0.0F;
+                            this.itemRender.zLevel = 0.0F;
+
+                            // Annoying but easier than trying to splice into render item
+                            super.drawSlot(s);
+
+                            if (isShiftKeyDown()) {
+                                this.stackSizeRenderer.renderStackSize(this.fontRenderer,
+                                        AEItemStack.fromItemStack(out), s.xPos, s.yPos);
+                            } else {
+                                super.drawSlot(s);
+                            }
+                            return;
+                        }
+                    } else {
+                        super.drawSlot(s);
+                    }
+                } else if (s instanceof AppEngSlot) {
+                    AppEngSlot appEngSlot = ((AppEngSlot) s);
+                    if (s.getStack().isEmpty()) {
+                        super.drawSlot(s);
+                        return;
+                    }
+                    appEngSlot.setDisplay(true);
+                    appEngSlot.setReturnAsSingleStack(true);
+
+                    this.zLevel = 100.0F;
+                    this.itemRender.zLevel = 100.0F;
+
+                    if (!this.isPowered()) {
+                        drawRect(s.xPos, s.yPos, 16 + s.xPos, 16 + s.yPos, 0x66111111);
+                    }
+
+                    this.zLevel = 0.0F;
+                    this.itemRender.zLevel = 0.0F;
+
+                    boolean wasDragSplitting = this.dragSplitting;
+                    this.dragSplitting = false; // to prevent the vanilla slot renderer from rendering the stack count
+                                                // during drag splitting, we're re-enabling it later
+
+                    // Annoying but easier than trying to splice into render item
+                    super.drawSlot(s);
+
+                    ItemStack stackInSlot = ((AppEngSlot) s).getDisplayStack();
+                    ItemStack stackUnderCursor = this.mc.player.inventory.getItemStack();
+
+                    if (wasDragSplitting
+                            && this.dragSplittingSlots.contains(s)
+                            && this.dragSplittingSlots.size() > 1
+                            && !stackUnderCursor.isEmpty()) {
+                        if (Container.canAddItemToSlot(s, stackUnderCursor, true)
+                                && this.inventorySlots.canDragIntoSlot(s)) {
+                            drawRect(s.xPos, s.yPos, s.xPos + 16, s.yPos + 16, -2130706433);
+
+                            stackInSlot = stackUnderCursor.copy();
+                            Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, stackInSlot,
+                                    s.getStack().isEmpty() ? 0 : s.getStack().getCount());
+                            int k = Math.min(stackInSlot.getMaxStackSize(), s.getItemStackLimit(stackInSlot));
+
+                            if (stackInSlot.getCount() > k) {
+                                stackInSlot.setCount(k);
+                            }
+                        } else {
+                            this.dragSplittingSlots.remove(s);
+                            this.updateDragSplitting();
+                        }
+                    }
+
+                    this.dragSplitting = wasDragSplitting;
+                    this.stackSizeRenderer.renderStackSize(this.fontRenderer, AEItemStack.fromItemStack(stackInSlot),
+                            s.xPos, s.yPos);
+
+                    return;
                 } else {
                     super.drawSlot(s);
                 }
+
+                return;
+            } catch (final Exception err) {
+                AELog.warn("[AppEng] AE prevented crash while drawing slot: " + err);
             }
-        } else {
-            super.drawSlot(s);
         }
-    }
-
-    private void drawAppEngSlot(AppEngSlot s) {
-        if (s.getStack().isEmpty()) {
-            super.drawSlot(s);
-            return;
-        }
-
-        s.setDisplay(true);
-        s.setReturnAsSingleStack(true);
-
-        this.zLevel = 100.0F;
-        this.itemRender.zLevel = 100.0F;
-
-        if (!this.isPowered()) {
-            drawRect(s.xPos, s.yPos, 16 + s.xPos, 16 + s.yPos, 0x66111111);
-        }
-
-        this.zLevel = 0.0F;
-        this.itemRender.zLevel = 0.0F;
-
-        boolean wasDragSplitting = this.dragSplitting;
-        this.dragSplitting = false; // to prevent the vanilla slot renderer from rendering the stack count
-        // during drag splitting, we're re-enabling it later
-
-        // Annoying but easier than trying to splice into render item
+        // do the usual for non-ME Slots.
         super.drawSlot(s);
-
-        ItemStack stackInSlot = s.getDisplayStack();
-        ItemStack stackUnderCursor = this.mc.player.inventory.getItemStack();
-
-        if (wasDragSplitting
-                && this.dragSplittingSlots.contains(s)
-                && this.dragSplittingSlots.size() > 1
-                && !stackUnderCursor.isEmpty()) {
-            if (Container.canAddItemToSlot(s, stackUnderCursor, true)
-                    && this.inventorySlots.canDragIntoSlot(s)) {
-                drawRect(s.xPos, s.yPos, s.xPos + 16, s.yPos + 16, -2130706433);
-
-                stackInSlot = stackUnderCursor.copy();
-                Container.computeStackSize(this.dragSplittingSlots, this.dragSplittingLimit, stackInSlot,
-                        s.getStack().isEmpty() ? 0 : s.getStack().getCount());
-                int k = Math.min(stackInSlot.getMaxStackSize(), s.getItemStackLimit(stackInSlot));
-
-                if (stackInSlot.getCount() > k) {
-                    stackInSlot.setCount(k);
-                }
-            } else {
-                this.dragSplittingSlots.remove(s);
-                this.updateDragSplitting();
-            }
-        }
-
-        this.dragSplitting = wasDragSplitting;
-        this.stackSizeRenderer.renderStackSize(this.fontRenderer, AEItemStack.fromItemStack(stackInSlot),
-                s.xPos, s.yPos);
     }
 
     protected boolean isPowered() {
