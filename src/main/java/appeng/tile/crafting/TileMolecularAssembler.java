@@ -56,7 +56,7 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageMonitorable;
 import appeng.api.storage.IStorageMonitorableAccessor;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEPartLocation;
@@ -584,7 +584,7 @@ public class TileMolecularAssembler extends AENetworkInvTile
             IStorageMonitorable inventory = (IStorageMonitorable) capability;
             IAEItemStack toInsert = AEItemStack.fromItemStack(output);
             IMEMonitor<IAEItemStack> inv = inventory
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                    .getInventory(StorageChannels.items());
             IAEItemStack remainder = inv.injectItems(toInsert, Actionable.SIMULATE, this.mySrc);
             if (remainder == null) {
                 inv.injectItems(toInsert, Actionable.MODULATE, this.mySrc);

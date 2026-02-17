@@ -44,10 +44,9 @@ import net.minecraftforge.common.DimensionManager;
 
 import mezz.jei.api.gui.IGhostIngredientHandler;
 
-import appeng.api.AEApi;
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -416,9 +415,7 @@ public class GuiInterfaceConfigurationTerminal extends AEBaseGui implements IJEI
 
         boolean foundMatchingItemStack = false;
 
-        final String displayName = Platform
-                .getItemDisplayName(
-                        AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(itemStack))
+        final String displayName = Platform.getItemDisplayName(StorageChannels.items().createStack(itemStack))
                 .toLowerCase();
 
         for (String term : searchTerm.split(" ")) {

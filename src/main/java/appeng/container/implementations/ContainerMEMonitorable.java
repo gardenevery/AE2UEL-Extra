@@ -51,7 +51,7 @@ import appeng.api.parts.IPart;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
@@ -78,8 +78,7 @@ public class ContainerMEMonitorable extends AEBaseContainer
 
     protected final SlotRestrictedInput[] cellView = new SlotRestrictedInput[5];
     private final IMEMonitor<IAEItemStack> monitor;
-    public final IItemList<IAEItemStack> items = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-            .createList();
+    public final IItemList<IAEItemStack> items = StorageChannels.items().createList();
     private final IConfigManager clientCM;
     private final ITerminalHost host;
     @GuiSync(99)
@@ -116,7 +115,7 @@ public class ContainerMEMonitorable extends AEBaseContainer
             this.serverCM = monitorable.getConfigManager();
 
             this.monitor = monitorable
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                    .getInventory(StorageChannels.items());
             if (this.monitor != null) {
                 this.monitor.addListener(this, null);
 
@@ -225,7 +224,7 @@ public class ContainerMEMonitorable extends AEBaseContainer
     public void detectAndSendChanges() {
         if (Platform.isServer()) {
             if (this.monitor != this.host
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class))) {
+                    .getInventory(StorageChannels.items())) {
                 this.setValidContainer(false);
             }
 

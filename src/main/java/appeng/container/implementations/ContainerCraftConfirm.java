@@ -46,7 +46,7 @@ import appeng.api.networking.security.IActionSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.client.gui.implementations.GuiCraftConfirm;
@@ -196,8 +196,7 @@ public class ContainerCraftConfirm extends AEBaseContainer {
                     final PacketMEInventoryUpdate d = new PacketMEInventoryUpdate((byte) 3);
                     final PacketMEInventoryUpdate e = new PacketMEInventoryUpdate((byte) 4);
 
-                    final IItemList<IAEItemStack> plan = AEApi.instance().storage()
-                            .getStorageChannel(IItemStorageChannel.class).createList();
+                    final IItemList<IAEItemStack> plan = StorageChannels.items().createList();
                     this.result.populatePlan(plan);
 
                     this.setUsedBytes(this.result.getByteTotal());
@@ -221,8 +220,7 @@ public class ContainerCraftConfirm extends AEBaseContainer {
                     }
 
                     final IStorageGrid sg = grid.getCache(IStorageGrid.class);
-                    final IMEMonitor<IAEItemStack> items = sg
-                            .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                    final IMEMonitor<IAEItemStack> items = sg.getInventory(StorageChannels.items());
 
                     for (final IAEItemStack out : plan) {
                         final long requested = out.getStackSize();

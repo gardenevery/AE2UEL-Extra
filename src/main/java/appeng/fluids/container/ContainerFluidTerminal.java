@@ -32,7 +32,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
-import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
@@ -45,7 +44,7 @@ import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.channels.IFluidStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
@@ -77,8 +76,7 @@ public class ContainerFluidTerminal extends AEBaseContainer
         implements IConfigManagerHost, IConfigurableObject, IMEMonitorHandlerReceiver<IAEFluidStack> {
     private final IConfigManager clientCM;
     private final IMEMonitor<IAEFluidStack> monitor;
-    private final IItemList<IAEFluidStack> fluids = AEApi.instance().storage()
-            .getStorageChannel(IFluidStorageChannel.class).createList();
+    private final IItemList<IAEFluidStack> fluids = StorageChannels.fluids().createList();
     @GuiSync(99)
     public boolean hasPower = false;
     private final ITerminalHost terminal;
@@ -99,7 +97,7 @@ public class ContainerFluidTerminal extends AEBaseContainer
         if (Platform.isServer()) {
             this.serverCM = terminal.getConfigManager();
             this.monitor = terminal
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class));
+                    .getInventory(StorageChannels.fluids());
 
             if (this.monitor != null) {
                 this.monitor.addListener(this, null);
@@ -224,7 +222,7 @@ public class ContainerFluidTerminal extends AEBaseContainer
     public void detectAndSendChanges() {
         if (Platform.isServer()) {
             if (this.monitor != this.terminal
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class))) {
+                    .getInventory(StorageChannels.fluids())) {
                 this.setValidContainer(false);
             }
 

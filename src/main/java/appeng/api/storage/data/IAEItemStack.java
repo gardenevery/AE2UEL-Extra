@@ -25,10 +25,10 @@ package appeng.api.storage.data;
 
 import java.util.Objects;
 
-import appeng.api.AEApi;
-import appeng.api.storage.channels.IItemStorageChannel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import appeng.api.storage.StorageChannels;
 
 /**
  * An alternate version of ItemStack for AE to keep tabs on things easier, and to support larger storage. stackSizes of
@@ -45,10 +45,7 @@ public interface IAEItemStack extends IAEStack {
      */
     static IAEItemStack of(ItemStack stack) {
         Objects.requireNonNull(stack);
-        return AEApi.instance()
-                .storage()
-                .getStorageChannel(IItemStorageChannel.class)
-                .createStack(stack);
+        return StorageChannels.items().createStack(stack);
     }
 
     /**

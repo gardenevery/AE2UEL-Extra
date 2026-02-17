@@ -10,10 +10,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
-import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.guisync.GuiSync;
 import appeng.container.slot.SlotRestrictedInput;
@@ -69,7 +68,7 @@ public class ContainerOreDictStorageBus extends ContainerUpgradeable {
         Set<Integer> oreIDs = new HashSet<>();
 
         for (IAEItemStack itemStack : cellInv.getAvailableItems(
-                AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createList())) {
+                StorageChannels.items().createList())) {
             OreReference ref = ((AEItemStack) itemStack).getOre().orElse(null);
             if (ref != null) {
                 oreIDs.addAll(ref.getOres());

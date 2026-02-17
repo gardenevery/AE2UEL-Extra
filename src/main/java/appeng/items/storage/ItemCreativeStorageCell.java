@@ -32,7 +32,7 @@ import appeng.api.config.FuzzyMode;
 import appeng.api.storage.ICellInventoryHandler;
 import appeng.api.storage.ICellWorkbenchItem;
 import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.items.AEBaseItem;
 import appeng.items.contents.CellConfig;
 
@@ -74,8 +74,7 @@ public class ItemCreativeStorageCell extends AEBaseItem implements ICellWorkbenc
         final IMEInventoryHandler<?> inventory = AEApi.instance()
                 .registries()
                 .cell()
-                .getCellInventory(stack, null,
-                        AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                .getCellInventory(stack, null, StorageChannels.items());
 
         if (inventory instanceof ICellInventoryHandler) {
             final CellConfig cc = new CellConfig(stack);

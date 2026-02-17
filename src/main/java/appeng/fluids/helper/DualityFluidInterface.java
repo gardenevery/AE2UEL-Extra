@@ -48,7 +48,6 @@ import net.minecraftforge.items.IItemHandler;
 import gregtech.api.block.machines.BlockMachine;
 import gregtech.api.metatileentity.MetaTileEntity;
 
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.Settings;
 import appeng.api.config.Upgrades;
@@ -66,8 +65,6 @@ import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.*;
-import appeng.api.storage.channels.IFluidStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -118,10 +115,10 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     private int priority;
 
     private final MEMonitorPassThrough<IAEItemStack> items = new MEMonitorPassThrough<>(
-            new NullInventory<IAEItemStack>(), AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+            new NullInventory<IAEItemStack>(), StorageChannels.items());
     private final MEMonitorPassThrough<IAEFluidStack> fluids = new MEMonitorPassThrough<>(
             new NullInventory<IAEFluidStack>(),
-            AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class));
+            StorageChannels.fluids());
     private boolean resetConfigCache = true;
     private IMEMonitor<IAEFluidStack> configCachedHandler;
 
@@ -163,13 +160,13 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
 
     @Override
     public <T extends IAEStack> IMEMonitor<T> getInventory(IStorageChannel<T> channel) {
-        if (channel == AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)) {
+        if (channel == StorageChannels.items()) {
             if (this.hasConfig()) {
                 return null;
             }
 
             return (IMEMonitor<T>) this.items;
-        } else if (channel == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+        } else if (channel == StorageChannels.fluids()) {
             if (this.hasConfig()) {
                 if (resetConfigCache) {
                     resetConfigCache = false;
@@ -227,9 +224,9 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
     public void gridChanged() {
         try {
             this.items.setInternal(this.gridProxy.getStorage()
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)));
+                    .getInventory(StorageChannels.items()));
             this.fluids.setInternal(this.gridProxy.getStorage()
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)));
+                    .getInventory(StorageChannels.fluids()));
         } catch (final GridAccessException gae) {
             this.items.setInternal(new NullInventory<>());
             this.fluids.setInternal(new NullInventory<>());
@@ -450,7 +447,7 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
         boolean changed = false;
         try {
             final IMEInventory<IAEFluidStack> dest = this.gridProxy.getStorage()
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class));
+                    .getInventory(StorageChannels.fluids());
             final IEnergySource src = this.gridProxy.getEnergy();
 
             if (work.getStackSize() > 0) {
@@ -458,7 +455,7 @@ public class DualityFluidInterface implements IGridTickable, IStorageMonitorable
                 if (this.tanks.fill(slot, work.getFluidStack(), false) != work.getStackSize()) {
                     changed = true;
                 } else if (this.gridProxy.getStorage()
-                        .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class))
+                        .getInventory(StorageChannels.fluids())
                         .getStorageList().findPrecise(work) != null) {
                     final IAEFluidStack acquired = Platform.poweredExtraction(src, dest, work,
                             this.interfaceRequestSource);

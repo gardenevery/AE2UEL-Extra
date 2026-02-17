@@ -18,7 +18,6 @@ import net.minecraftforge.items.IItemHandler;
 
 import baubles.api.BaublesApi;
 
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.Settings;
@@ -36,7 +35,7 @@ import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.channels.IFluidStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
@@ -74,8 +73,7 @@ public class ContainerMEPortableFluidCell extends AEBaseContainer implements IAE
 
     private final IConfigManager clientCM;
     private final IMEMonitor<IAEFluidStack> monitor;
-    private final IItemList<IAEFluidStack> fluids = AEApi.instance().storage()
-            .getStorageChannel(IFluidStorageChannel.class).createList();
+    private final IItemList<IAEFluidStack> fluids = StorageChannels.fluids().createList();
     @GuiSync(99)
     public boolean hasPower = false;
     private final ITerminalHost terminal;
@@ -114,7 +112,7 @@ public class ContainerMEPortableFluidCell extends AEBaseContainer implements IAE
         if (Platform.isServer()) {
             this.serverCM = terminal.getConfigManager();
             this.monitor = terminal
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class));
+                    .getInventory(StorageChannels.fluids());
 
             if (this.monitor != null) {
                 this.monitor.addListener(this, null);
@@ -213,7 +211,7 @@ public class ContainerMEPortableFluidCell extends AEBaseContainer implements IAE
             }
 
             if (this.monitor != this.terminal
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class))) {
+                    .getInventory(StorageChannels.fluids())) {
                 this.setValidContainer(false);
             }
 

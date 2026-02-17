@@ -42,11 +42,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 
-import appeng.api.AEApi;
 import appeng.api.config.ActionItems;
 import appeng.api.config.Settings;
 import appeng.api.config.TerminalStyle;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiImgButton;
 import appeng.client.gui.widgets.GuiScrollbar;
@@ -670,8 +669,7 @@ public class GuiInterfaceTerminal extends AEBaseGui {
             final ItemStack parsedItemStack = new ItemStack(tag.getCompoundTagAt(i));
             if (!parsedItemStack.isEmpty()) {
                 final String displayName = Platform
-                        .getItemDisplayName(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                                .createStack(parsedItemStack))
+                        .getItemDisplayName(StorageChannels.items().createStack(parsedItemStack))
                         .toLowerCase();
 
                 for (String term : splitTerm) {

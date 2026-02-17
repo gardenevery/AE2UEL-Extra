@@ -36,7 +36,7 @@ import appeng.api.implementations.items.IStorageCell;
 import appeng.api.storage.ICellWorkbenchItem;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.container.guisync.GuiSync;
@@ -199,9 +199,7 @@ public class ContainerCellWorkbench extends ContainerUpgradeable {
         final ItemStack is = this.getUpgradeable().getInventoryByName("cell").getStackInSlot(0);
         final IStorageChannel channel = is.getItem() instanceof IStorageCell
                 ? ((IStorageCell) is.getItem()).getChannel()
-                : AEApi.instance()
-                        .storage()
-                        .getStorageChannel(IItemStorageChannel.class);
+                : StorageChannels.items();
 
         final IMEInventory cellInv = AEApi.instance().registries().cell().getCellInventory(is, null, channel);
 

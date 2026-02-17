@@ -25,7 +25,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
-import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.energy.IEnergyGrid;
@@ -36,7 +35,7 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartModel;
 import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.core.AppEng;
@@ -87,11 +86,10 @@ public class PartImportBus extends PartSharedItemBus implements IInventoryDestin
         try {
             final IMEMonitor<IAEItemStack> inv = this.getProxy()
                     .getStorage()
-                    .getInventory(
-                            AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                    .getInventory(StorageChannels.items());
 
             final IAEItemStack out = inv.injectItems(
-                    AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(stack),
+                    StorageChannels.items().createStack(stack),
                     Actionable.SIMULATE,
                     this.source);
             if (out == null) {
@@ -150,8 +148,7 @@ public class PartImportBus extends PartSharedItemBus implements IInventoryDestin
 
                 final IMEMonitor<IAEItemStack> inv = this.getProxy()
                         .getStorage()
-                        .getInventory(
-                                AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                        .getInventory(StorageChannels.items());
                 final IEnergyGrid energy = this.getProxy().getEnergy();
 
                 boolean Configured = false;
@@ -203,8 +200,7 @@ public class PartImportBus extends PartSharedItemBus implements IInventoryDestin
         }
 
         if (!newItems.isEmpty()) {
-            final IAEItemStack aeStack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                    .createStack(newItems);
+            final IAEItemStack aeStack = StorageChannels.items().createStack(newItems);
             final IAEItemStack failed = Platform.poweredInsert(energy, inv, aeStack, this.source);
 
             if (failed != null) {

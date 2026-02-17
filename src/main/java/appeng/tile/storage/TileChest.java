@@ -57,8 +57,6 @@ import appeng.api.networking.security.ISecurityGrid;
 import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.*;
-import appeng.api.storage.channels.IFluidStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -183,7 +181,7 @@ public class TileChest extends AENetworkPowerTile
                 if (cellHandler != null) {
                     double power = 1.0;
 
-                    for (IStorageChannel channel : AEApi.instance().storage().storageChannels()) {
+                    for (IStorageChannel channel : StorageChannels.getAll()) {
                         final ICellInventoryHandler<IAEItemStack> newCell = cellHandler.getCellInventory(is, this,
                                 channel);
                         if (newCell != null) {
@@ -197,7 +195,7 @@ public class TileChest extends AENetworkPowerTile
                     this.accessor = new Accessor();
 
                     if (this.cellHandler != null && this.cellHandler
-                            .getChannel() == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+                            .getChannel() == StorageChannels.fluids()) {
                         this.fluidHandler = new FluidHandler();
                     }
                 }
@@ -442,8 +440,7 @@ public class TileChest extends AENetworkPowerTile
         if (!ItemHandlerUtil.isEmpty(this.inputInventory)) {
             this.updateHandler();
 
-            if (this.cellHandler != null && this.cellHandler.getChannel() == AEApi.instance().storage()
-                    .getStorageChannel(IItemStorageChannel.class)) {
+            if (this.cellHandler != null && this.cellHandler.getChannel() == StorageChannels.items()) {
                 final IAEItemStack returns = Platform.poweredInsert(this, this.cellHandler,
                         AEItemStack.fromItemStack(this.inputInventory.getStackInSlot(0)), this.mySrc);
 
@@ -714,7 +711,7 @@ public class TileChest extends AENetworkPowerTile
         public int fill(final FluidStack resource, final boolean doFill) {
             TileChest.this.updateHandler();
             if (TileChest.this.cellHandler != null && TileChest.this.cellHandler
-                    .getChannel() == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+                    .getChannel() == StorageChannels.fluids()) {
                 final IAEFluidStack results = Platform.poweredInsert(TileChest.this, TileChest.this.cellHandler,
                         AEFluidStack.fromFluidStack(resource),
                         TileChest.this.mySrc, doFill ? Actionable.MODULATE : Actionable.SIMULATE);
@@ -742,7 +739,7 @@ public class TileChest extends AENetworkPowerTile
             TileChest.this.updateHandler();
 
             if (TileChest.this.cellHandler != null && TileChest.this.cellHandler
-                    .getChannel() == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+                    .getChannel() == StorageChannels.fluids()) {
                 return this.TANK_PROPS;
             }
             return null;
@@ -760,7 +757,7 @@ public class TileChest extends AENetworkPowerTile
             if (TileChest.this.isPowered()) {
                 TileChest.this.updateHandler();
                 return TileChest.this.cellHandler != null && TileChest.this.cellHandler
-                        .getChannel() == AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+                        .getChannel() == StorageChannels.items();
             }
             return false;
         }
@@ -789,12 +786,10 @@ public class TileChest extends AENetworkPowerTile
     public GuiBridge getGuiBridge() {
         this.updateHandler();
         if (this.cellHandler != null) {
-            if (this.cellHandler.getChannel() == AEApi.instance().storage()
-                    .getStorageChannel(IItemStorageChannel.class)) {
+            if (this.cellHandler.getChannel() == StorageChannels.fluids()) {
                 return GuiBridge.GUI_ME;
             }
-            if (this.cellHandler.getChannel() == AEApi.instance().storage()
-                    .getStorageChannel(IFluidStorageChannel.class)) {
+            if (this.cellHandler.getChannel() == StorageChannels.fluids()) {
                 return GuiBridge.GUI_FLUID_TERMINAL;
             }
         }

@@ -50,7 +50,7 @@ import appeng.api.networking.security.IActionSource;
 import appeng.api.networking.security.ISecurityGrid;
 import appeng.api.parts.IPart;
 import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.me.SlotME;
 import appeng.container.guisync.GuiSync;
@@ -649,8 +649,7 @@ public abstract class AEBaseContainer extends Container {
                 final ItemStack isg = player.inventory.getItemStack();
 
                 if (!isg.isEmpty() && releaseQty > 0) {
-                    IAEItemStack ais = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                            .createStack(isg);
+                    IAEItemStack ais = StorageChannels.items().createStack(isg);
                     ais.setStackSize(1);
                     final IAEItemStack extracted = ais.copy();
 
@@ -728,8 +727,7 @@ public abstract class AEBaseContainer extends Container {
                         this.updateHeld(player);
                     }
                 } else {
-                    IAEItemStack ais = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                            .createStack(player.inventory.getItemStack());
+                    IAEItemStack ais = StorageChannels.items().createStack(player.inventory.getItemStack());
                     ais = Platform.poweredInsert(this.getPowerSource(), this.getCellInventory(), ais,
                             this.getActionSource());
                     if (ais != null) {
@@ -768,8 +766,7 @@ public abstract class AEBaseContainer extends Container {
                         this.updateHeld(player);
                     }
                 } else {
-                    IAEItemStack ais = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                            .createStack(player.inventory.getItemStack());
+                    IAEItemStack ais = StorageChannels.items().createStack(player.inventory.getItemStack());
                     ais.setStackSize(1);
                     ais = Platform.poweredInsert(this.getPowerSource(), this.getCellInventory(), ais,
                             this.getActionSource());
@@ -853,7 +850,7 @@ public abstract class AEBaseContainer extends Container {
             return input;
         }
         final IAEItemStack ais = Platform.poweredInsert(this.getPowerSource(), this.getCellInventory(),
-                AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(input),
+                StorageChannels.items().createStack(input),
                 this.getActionSource());
         if (ais == null) {
             return ItemStack.EMPTY;

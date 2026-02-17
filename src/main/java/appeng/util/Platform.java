@@ -94,10 +94,7 @@ import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.networking.security.ISecurityGrid;
 import appeng.api.networking.storage.IStorageGrid;
-import appeng.api.storage.IMEInventory;
-import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.IMEMonitorHandlerReceiver;
-import appeng.api.storage.IStorageChannel;
+import appeng.api.storage.*;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -1169,7 +1166,7 @@ public class Platform {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void postChanges(final IStorageGrid gs, final ItemStack removed, final ItemStack added,
             final IActionSource src) {
-        for (final IStorageChannel<?> chan : AEApi.instance().storage().storageChannels()) {
+        for (final IStorageChannel<?> chan : StorageChannels.getAll()) {
             final IItemList<?> myChanges = chan.createList();
 
             if (!removed.isEmpty()) {

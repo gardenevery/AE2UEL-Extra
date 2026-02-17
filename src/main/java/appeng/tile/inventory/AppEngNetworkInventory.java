@@ -7,12 +7,11 @@ import javax.annotation.Nonnull;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.wrapper.RangedWrapper;
 
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.util.inv.IAEAppEngInventory;
 import appeng.util.inv.InvOperation;
@@ -36,8 +35,7 @@ public class AppEngNetworkInventory extends AppEngInternalOversizedInventory {
         IStorageGrid storage = supplier.get();
         if (storage != null) {
             int originAmt = stack.getCount();
-            IMEInventory<IAEItemStack> dest = storage
-                    .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+            IMEInventory<IAEItemStack> dest = storage.getInventory(StorageChannels.items());
             IAEItemStack overflow = dest.injectItems(AEItemStack.fromItemStack(stack),
                     simulate ? Actionable.SIMULATE : Actionable.MODULATE, this.source);
             if (overflow != null && overflow.getStackSize() == originAmt) {

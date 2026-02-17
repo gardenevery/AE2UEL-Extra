@@ -27,17 +27,11 @@ import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.Actionable;
 import appeng.api.networking.events.MENetworkStorageEvent;
 import appeng.api.networking.security.IActionSource;
-import appeng.api.storage.IMEInventoryHandler;
-import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.IMEMonitorHandlerReceiver;
-import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IFluidStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.*;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.me.storage.ItemWatcher;
@@ -112,18 +106,18 @@ public class NetworkMonitor<T extends IAEStack> implements IMEMonitor<T> {
     }
 
     public long getGridCurrentCount() {
-        if (myChannel == AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)) {
+        if (myChannel == StorageChannels.items()) {
             return gridItemCount;
-        } else if (myChannel == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+        } else if (myChannel == StorageChannels.fluids()) {
             return gridFluidCount;
         }
         return 0;
     }
 
     public void incGridCurrentCount(long count) {
-        if (myChannel == AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)) {
+        if (myChannel == StorageChannels.items()) {
             gridItemCount += count;
-        } else if (myChannel == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+        } else if (myChannel == StorageChannels.fluids()) {
             gridFluidCount += count;
         }
     }
@@ -282,9 +276,9 @@ public class NetworkMonitor<T extends IAEStack> implements IMEMonitor<T> {
             }
         }
 
-        if (myChannel == AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)) {
+        if (myChannel == StorageChannels.items()) {
             gridItemCount = count;
-        } else if (myChannel == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)) {
+        } else if (myChannel == StorageChannels.fluids()) {
             gridFluidCount = count;
         }
 

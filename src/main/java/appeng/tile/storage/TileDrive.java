@@ -228,8 +228,7 @@ public class TileDrive extends AENetworkInvTile implements IChestOrDrive, IPrior
 
     private void updateState() {
         if (!this.isCached) {
-            final Collection<IStorageChannel<? extends IAEStack>> storageChannels = AEApi.instance().storage()
-                    .storageChannels();
+            final Collection<IStorageChannel<? extends IAEStack>> storageChannels = StorageChannels.getAll();
             storageChannels.forEach(channel -> this.inventoryHandlers.put(channel, new ArrayList<>(10)));
 
             double power = 2.0;

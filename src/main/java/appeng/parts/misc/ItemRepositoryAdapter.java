@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.Actionable;
 import appeng.api.config.Settings;
@@ -20,7 +19,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AELog;
@@ -136,7 +135,7 @@ class ItemRepositoryAdapter implements IMEInventory<IAEItemStack>, IBaseMonitor<
 
     @Override
     public IStorageChannel<IAEItemStack> getChannel() {
-        return AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+        return StorageChannels.items();
     }
 
     @Override
@@ -180,8 +179,7 @@ class ItemRepositoryAdapter implements IMEInventory<IAEItemStack>, IBaseMonitor<
     }
 
     private static class InventoryCache {
-        private IItemList<IAEItemStack> currentlyCached = AEApi.instance().storage()
-                .getStorageChannel(IItemStorageChannel.class).createList();
+        private IItemList<IAEItemStack> currentlyCached = StorageChannels.items().createList();
         private final IItemRepository iItemRepository;
 
         public InventoryCache(IItemRepository iItemRepository) {
@@ -196,8 +194,7 @@ class ItemRepositoryAdapter implements IMEInventory<IAEItemStack>, IBaseMonitor<
         public List<IAEItemStack> update() {
             final List<IAEItemStack> changes = new ArrayList<>();
 
-            IItemList<IAEItemStack> currentlyOnStorage = AEApi.instance().storage()
-                    .getStorageChannel(IItemStorageChannel.class).createList();
+            IItemList<IAEItemStack> currentlyOnStorage = StorageChannels.items().createList();
             this.iItemRepository.getAllItems().stream()
                     .map(s -> {
                         IAEItemStack stack = AEItemStack.fromItemStack(s.itemPrototype);

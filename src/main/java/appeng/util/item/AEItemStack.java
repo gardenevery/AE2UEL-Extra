@@ -41,10 +41,9 @@ import ic2.api.item.ICustomDamageItem;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
-import appeng.core.Api;
 import appeng.integration.modules.gregtech.ToolClass;
 import appeng.util.Platform;
 
@@ -174,7 +173,7 @@ public class AEItemStack extends AEStack<IAEItemStack> implements IAEItemStack {
 
     @Override
     public IStorageChannel<IAEItemStack> getChannel() {
-        return Api.INSTANCE.storage().getStorageChannel(IItemStorageChannel.class);
+        return StorageChannels.items();
     }
 
     @Override

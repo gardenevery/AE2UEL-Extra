@@ -23,10 +23,9 @@ import java.util.Iterator;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.items.IItemHandler;
 
-import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.channels.IFluidStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.container.guisync.GuiSync;
@@ -145,9 +144,7 @@ public class ContainerFluidStorageBus extends ContainerFluidConfigurable {
 
         Iterator<IAEFluidStack> i = new NullIterator<>();
         if (cellInv != null) {
-            final IItemList<IAEFluidStack> list = cellInv
-                    .getAvailableItems(
-                            AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class).createList());
+            final IItemList<IAEFluidStack> list = cellInv.getAvailableItems(StorageChannels.fluids().createList());
             i = list.iterator();
         }
 

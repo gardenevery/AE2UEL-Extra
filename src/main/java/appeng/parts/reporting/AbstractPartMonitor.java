@@ -36,7 +36,6 @@ import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import appeng.api.AEApi;
 import appeng.api.implementations.parts.IPartStorageMonitor;
 import appeng.api.networking.events.MENetworkChannelsChanged;
 import appeng.api.networking.events.MENetworkEventSubscribe;
@@ -47,8 +46,7 @@ import appeng.api.networking.storage.IStackWatcherHost;
 import appeng.api.parts.IPartModel;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IFluidStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -250,16 +248,14 @@ public abstract class AbstractPartMonitor extends AbstractPartDisplay
                 }
 
                 this.updateReportingValue(
-                        this.getProxy().getStorage()
-                                .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)));
+                        this.getProxy().getStorage().getInventory(StorageChannels.items()));
             } else if (this.configuredFluid != null) {
                 if (this.myWatcher != null) {
                     this.myWatcher.add(this.configuredFluid);
                 }
 
                 this.updateReportingValue(
-                        this.getProxy().getStorage().getInventory(
-                                AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)));
+                        this.getProxy().getStorage().getInventory(StorageChannels.fluids()));
             }
         } catch (final GridAccessException e) {
             // >.>

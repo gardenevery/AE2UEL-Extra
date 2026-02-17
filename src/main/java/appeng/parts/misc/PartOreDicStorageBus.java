@@ -8,14 +8,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
-import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.networking.storage.IBaseMonitor;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.networking.ticking.ITickManager;
 import appeng.api.parts.IPartModel;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.core.AppEng;
 import appeng.core.sync.GuiBridge;
@@ -112,8 +111,7 @@ public class PartOreDicStorageBus extends PartStorageBus {
             }
 
             if (inv != null) {
-                this.handler = new MEInventoryHandler<>(inv,
-                        AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                this.handler = new MEInventoryHandler<>(inv, StorageChannels.items());
 
                 this.handler.setBaseAccess((AccessRestriction) this.getConfigManager().getSetting(Settings.ACCESS));
                 this.handler.setWhitelist(this.getInstalledUpgrades(Upgrades.INVERTER) > 0 ? IncludeExclude.BLACKLIST

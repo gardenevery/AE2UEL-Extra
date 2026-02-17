@@ -27,8 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.items.IItemHandler;
 
-import appeng.api.AEApi;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.implementations.ContainerPatternEncoder;
 import appeng.core.sync.AppEngPacket;
@@ -80,8 +79,7 @@ public class PacketPatternSlot extends AppEngPacket {
 
         this.writeItem(slotItem, data);
         for (int x = 0; x < 9; x++) {
-            this.pattern[x] = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                    .createStack(pat.getStackInSlot(x));
+            this.pattern[x] = StorageChannels.items().createStack(pat.getStackInSlot(x));
             this.writeItem(this.pattern[x], data);
         }
 

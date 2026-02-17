@@ -57,7 +57,7 @@ import appeng.api.implementations.tiles.IColorableTile;
 import appeng.api.storage.ICellInventoryHandler;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEColor;
@@ -432,8 +432,7 @@ public class ToolColorApplicator extends AEBasePoweredItem
         final ICellInventoryHandler<IAEItemStack> cdi = AEApi.instance()
                 .registries()
                 .cell()
-                .getCellInventory(stack, null,
-                        AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                .getCellInventory(stack, null, StorageChannels.items());
 
         AEApi.instance().client().addCellInformation(cdi, lines);
     }
@@ -490,7 +489,7 @@ public class ToolColorApplicator extends AEBasePoweredItem
 
     @Override
     public IStorageChannel<IAEItemStack> getChannel() {
-        return AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+        return StorageChannels.items();
     }
 
     @Override

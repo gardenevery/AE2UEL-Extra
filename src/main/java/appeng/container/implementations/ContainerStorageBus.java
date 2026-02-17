@@ -24,10 +24,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
-import appeng.api.AEApi;
 import appeng.api.config.*;
 import appeng.api.storage.IMEInventory;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.container.guisync.GuiSync;
@@ -145,9 +144,7 @@ public class ContainerStorageBus extends ContainerUpgradeable {
 
         Iterator<IAEItemStack> i = new NullIterator<>();
         if (cellInv != null) {
-            final IItemList<IAEItemStack> list = cellInv
-                    .getAvailableItems(
-                            AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createList());
+            final IItemList<IAEItemStack> list = cellInv.getAvailableItems(StorageChannels.items().createList());
             i = list.iterator();
         }
 

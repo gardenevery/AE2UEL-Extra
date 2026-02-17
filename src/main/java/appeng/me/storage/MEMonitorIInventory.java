@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 
 import net.minecraft.item.ItemStack;
 
-import appeng.api.AEApi;
 import appeng.api.config.AccessRestriction;
 import appeng.api.config.Actionable;
 import appeng.api.config.StorageFilter;
@@ -32,7 +31,7 @@ import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.util.InventoryAdaptor;
@@ -41,8 +40,7 @@ import appeng.util.inv.ItemSlot;
 public class MEMonitorIInventory implements IMEMonitor<IAEItemStack>, ITickingMonitor {
 
     private final InventoryAdaptor adaptor;
-    private IItemList<IAEItemStack> cache = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-            .createList();
+    private IItemList<IAEItemStack> cache = StorageChannels.items().createList();
 
     private final HashMap<IMEMonitorHandlerReceiver<IAEItemStack>, Object> listeners = new HashMap<>();
     private IActionSource mySource;
@@ -124,7 +122,7 @@ public class MEMonitorIInventory implements IMEMonitor<IAEItemStack>, ITickingMo
 
     @Override
     public IStorageChannel getChannel() {
-        return AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+        return StorageChannels.items();
     }
 
     @Override
@@ -133,8 +131,7 @@ public class MEMonitorIInventory implements IMEMonitor<IAEItemStack>, ITickingMo
 
         final List<IAEItemStack> changes = new ArrayList<>();
 
-        IItemList<IAEItemStack> currentlyOnStorage = AEApi.instance().storage()
-                .getStorageChannel(IItemStorageChannel.class).createList();
+        IItemList<IAEItemStack> currentlyOnStorage = StorageChannels.items().createList();
 
         for (final ItemSlot is : adaptor) {
             if (this.mode == StorageFilter.EXTRACTABLE_ONLY && !is.isExtractable()) {

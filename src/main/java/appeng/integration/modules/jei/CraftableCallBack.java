@@ -16,9 +16,8 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import mezz.jei.api.gui.ITooltipCallback;
 
-import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.container.AEBaseContainer;
@@ -113,8 +112,7 @@ public class CraftableCallBack implements ITooltipCallback<ItemStack> {
 
     IItemList<IAEItemStack> mergeInventories(IItemList<IAEItemStack> repo,
             ContainerMEMonitorable containerCraftingTerm) {
-        IItemList<IAEItemStack> itemList = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
-                .createList();
+        IItemList<IAEItemStack> itemList = StorageChannels.items().createList();
         for (IAEItemStack i : repo) {
             itemList.addStorage(i);
         }

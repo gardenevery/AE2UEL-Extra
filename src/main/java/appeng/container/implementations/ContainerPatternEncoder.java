@@ -27,7 +27,7 @@ import appeng.api.implementations.guiobjects.IGuiItemObject;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.ITerminalHost;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.container.ContainerNull;
@@ -687,10 +687,10 @@ public abstract class ContainerPatternEncoder extends ContainerMEMonitorable
             IMEMonitor<IAEItemStack> storage = null;
             if (getPart() != null) {
                 storage = this.getPart()
-                        .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                        .getInventory(StorageChannels.items());
             } else if (iGuiItemObject != null) {
                 storage = ((ITerminalHost) iGuiItemObject)
-                        .getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                        .getInventory(StorageChannels.items());
             }
 
             final IItemList<IAEItemStack> all = storage.getStorageList();

@@ -26,7 +26,6 @@ import com.google.common.base.Stopwatch;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
@@ -38,7 +37,7 @@ import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.networking.storage.IStorageGrid;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.DimensionalCoord;
@@ -52,10 +51,8 @@ public class CraftingJob implements Runnable, ICraftingJob {
 
     private final MECraftingInventory original;
     private final World world;
-    private final IItemList<IAEItemStack> crafting = AEApi.instance().storage()
-            .getStorageChannel(IItemStorageChannel.class).createList();
-    private final IItemList<IAEItemStack> missing = AEApi.instance().storage()
-            .getStorageChannel(IItemStorageChannel.class).createList();
+    private final IItemList<IAEItemStack> crafting = StorageChannels.items().createList();
+    private final IItemList<IAEItemStack> missing = StorageChannels.items().createList();
 
     private final HashMap<String, TwoIntegers> opsAndMultiplier = new HashMap<>();
     private final Object monitor = new Object();
@@ -90,8 +87,7 @@ public class CraftingJob implements Runnable, ICraftingJob {
         this.cc = grid.getCache(ICraftingGrid.class);
         final GridStorageCache sg = grid.getCache(IStorageGrid.class);
         this.original = new MECraftingInventory(
-                sg.getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class))
-                        .getStorageList());
+                sg.getInventory(StorageChannels.items()).getStorageList());
 
         this.rootNode = this.getCraftingTree(cc, what);
         this.setTree(this.rootNode);

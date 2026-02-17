@@ -49,7 +49,7 @@ import appeng.api.config.Upgrades;
 import appeng.api.implementations.items.IStorageCell;
 import appeng.api.storage.ICellInventoryHandler;
 import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEColor;
@@ -87,8 +87,7 @@ public class ToolMatterCannon extends AEBasePoweredItem implements IStorageCell<
         final ICellInventoryHandler<IAEItemStack> cdi = AEApi.instance()
                 .registries()
                 .cell()
-                .getCellInventory(stack, null,
-                        AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                .getCellInventory(stack, null, StorageChannels.items());
 
         AEApi.instance().client().addCellInformation(cdi, lines);
     }
@@ -107,12 +106,9 @@ public class ToolMatterCannon extends AEBasePoweredItem implements IStorageCell<
             final ICellInventoryHandler<IAEItemStack> inv = AEApi.instance()
                     .registries()
                     .cell()
-                    .getCellInventory(p.getHeldItem(hand), null,
-                            AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
+                    .getCellInventory(p.getHeldItem(hand), null, StorageChannels.items());
             if (inv != null) {
-                final IItemList<IAEItemStack> itemList = inv
-                        .getAvailableItems(
-                                AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createList());
+                final IItemList<IAEItemStack> itemList = inv.getAvailableItems(StorageChannels.items().createList());
                 IAEItemStack req = itemList.getFirstItem();
                 if (req instanceof IAEItemStack) {
                     shots = Math.min(shots, (int) req.getStackSize());
@@ -446,6 +442,6 @@ public class ToolMatterCannon extends AEBasePoweredItem implements IStorageCell<
 
     @Override
     public IStorageChannel<IAEItemStack> getChannel() {
-        return AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
+        return StorageChannels.items();
     }
 }

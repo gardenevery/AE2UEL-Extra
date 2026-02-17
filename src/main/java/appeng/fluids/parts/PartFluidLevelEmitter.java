@@ -14,7 +14,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
-import appeng.api.AEApi;
 import appeng.api.config.RedstoneMode;
 import appeng.api.config.Settings;
 import appeng.api.networking.events.MENetworkChannelsChanged;
@@ -29,6 +28,7 @@ import appeng.api.parts.IPartModel;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IMEMonitorHandlerReceiver;
 import appeng.api.storage.IStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEStack;
@@ -112,8 +112,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     @Override
     public void onStackChange(IItemList<?> o, IAEStack fullStack, IAEStack diffStack, IActionSource src,
             IStorageChannel<?> chan) {
-        if (chan == AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class)
-                && fullStack.equals(this.config.getFluidInSlot(0))) {
+        if (chan == StorageChannels.fluids() && fullStack.equals(this.config.getFluidInSlot(0))) {
             this.lastReportedValue = fullStack.getStackSize();
             this.updateState();
         }
@@ -175,8 +174,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     @Override
     public void onListUpdate() {
         try {
-            final IStorageChannel<IAEFluidStack> channel = AEApi.instance().storage()
-                    .getStorageChannel(IFluidStorageChannel.class);
+            final IStorageChannel<IAEFluidStack> channel = StorageChannels.fluids();
             final IMEMonitor<IAEFluidStack> inventory = this.getProxy().getStorage().getInventory(channel);
 
             this.updateReportingValue(inventory);
@@ -197,7 +195,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     }
 
     private void configureWatchers() {
-        final IFluidStorageChannel channel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
+        final IFluidStorageChannel channel = StorageChannels.fluids();
 
         if (this.stackWatcher != null) {
             this.stackWatcher.reset();

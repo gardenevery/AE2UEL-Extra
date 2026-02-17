@@ -23,7 +23,6 @@ import java.util.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
-import appeng.api.AEApi;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -63,7 +62,7 @@ public class GridStorageCache implements IStorageGrid {
         this.storageNetworks = new IdentityHashMap<>();
         this.storageMonitors = new IdentityHashMap<>();
 
-        AEApi.instance().storage().storageChannels()
+        StorageChannels.getAll()
                 .forEach(channel -> this.storageMonitors.put(channel, new NetworkMonitor<>(this, channel)));
     }
 

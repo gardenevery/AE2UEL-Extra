@@ -48,6 +48,7 @@ import appeng.api.networking.ticking.TickingRequest;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.IStorageChannel;
+import appeng.api.storage.StorageChannels;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AECableType;
@@ -317,7 +318,7 @@ public class TileIOPort extends AENetworkInvTile implements IUpgradeableHost, IC
                 if (!is.isEmpty()) {
                     boolean shouldMove = true;
 
-                    for (IStorageChannel<? extends IAEStack> c : AEApi.instance().storage().storageChannels()) {
+                    for (IStorageChannel<? extends IAEStack> c : StorageChannels.getAll()) {
                         if (itemsToMove > 0) {
                             final IMEMonitor<? extends IAEStack> network = this.getProxy().getStorage()
                                     .getInventory(c);
@@ -368,7 +369,7 @@ public class TileIOPort extends AENetworkInvTile implements IUpgradeableHost, IC
             this.currentCell = is;
             this.cachedInventories = new IdentityHashMap<>();
 
-            for (IStorageChannel<? extends IAEStack> c : AEApi.instance().storage().storageChannels()) {
+            for (IStorageChannel<? extends IAEStack> c : StorageChannels.getAll()) {
                 this.cachedInventories.put(c, AEApi.instance().registries().cell().getCellInventory(is, null, c));
             }
         }
@@ -482,9 +483,6 @@ public class TileIOPort extends AENetworkInvTile implements IUpgradeableHost, IC
      * Adds the items in the upgrade slots to the drop list.
      *
      * @param w     world
-     * @param x     x pos of tile entity
-     * @param y     y pos of tile entity
-     * @param z     z pos of tile entity
      * @param drops drops of tile entity
      */
     @Override
