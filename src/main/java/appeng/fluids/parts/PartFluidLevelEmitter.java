@@ -25,11 +25,7 @@ import appeng.api.networking.storage.IStackWatcher;
 import appeng.api.networking.storage.IStackWatcherHost;
 import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartModel;
-import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.IMEMonitorHandlerReceiver;
-import appeng.api.storage.IStorageChannel;
-import appeng.api.storage.StorageChannels;
-import appeng.api.storage.channels.IFluidStorageChannel;
+import appeng.api.storage.*;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.api.storage.data.IItemList;
@@ -195,7 +191,7 @@ public class PartFluidLevelEmitter extends PartUpgradeable implements IStackWatc
     }
 
     private void configureWatchers() {
-        final IFluidStorageChannel channel = StorageChannels.fluids();
+        final FluidStorageChannel channel = StorageChannels.fluids();
 
         if (this.stackWatcher != null) {
             this.stackWatcher.reset();

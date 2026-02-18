@@ -269,7 +269,8 @@ public class NetworkInventoryHandler<T extends IAEStack> implements IMEInventory
         return out;
     }
 
-    private void iterateInventories(IItemList<T> out, final NavigableMap<Integer, List<IMEInventoryHandler<T>>> map) {
+    private void iterateInventories(IItemList<T> out,
+            final NavigableMap<Integer, List<IMEInventoryHandler<T>>> map) {
         for (final List<IMEInventoryHandler<T>> i : map.values()) {
             for (final IMEInventoryHandler<T> j : i) {
                 j.getAvailableItems(out);

@@ -15,10 +15,10 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 import appeng.api.config.IncludeExclude;
+import appeng.api.storage.FluidStorageChannel;
 import appeng.api.storage.ICellInventory;
 import appeng.api.storage.ICellInventoryHandler;
-import appeng.api.storage.channels.IFluidStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.ItemStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
@@ -75,7 +75,7 @@ public class ApiClientHelper implements IClientHelper {
                 for (int i = 0; i < inv.getSlots(); i++) {
                     final ItemStack is = inv.getStackInSlot(i);
                     if (!is.isEmpty()) {
-                        if (cellInventory.getChannel() instanceof IItemStorageChannel) {
+                        if (cellInventory.getChannel() instanceof ItemStorageChannel) {
                             if (!handler.isFuzzy()) {
                                 final IAEItemStack ais = AEItemStack.fromItemStack(is);
                                 IAEItemStack stocked = ((IItemList<IAEItemStack>) itemList).findPrecise(ais);
@@ -83,7 +83,8 @@ public class ApiClientHelper implements IClientHelper {
                                         : ReadableNumberConverter.INSTANCE.toWideReadableForm(stocked.getStackSize())));
                             } else {
                                 final IAEItemStack ais = AEItemStack.fromItemStack(is);
-                                Collection<IAEItemStack> stocked = ((IItemList<IAEItemStack>) itemList).findFuzzy(ais,
+                                Collection<IAEItemStack> stocked = ((IItemList<IAEItemStack>) itemList).findFuzzy(
+                                        ais,
                                         handler.getCellInv().getFuzzyMode());
 
                                 int[] ids = OreDictionary.getOreIDs(is);
@@ -103,7 +104,7 @@ public class ApiClientHelper implements IClientHelper {
                                             + ReadableNumberConverter.INSTANCE.toWideReadableForm(size));
                                 }
                             }
-                        } else if (cellInventory.getChannel() instanceof IFluidStorageChannel) {
+                        } else if (cellInventory.getChannel() instanceof FluidStorageChannel) {
                             final AEFluidStack ais;
                             if (is.getItem() instanceof FluidDummyItem) {
                                 ais = AEFluidStack.fromFluidStack(((FluidDummyItem) is.getItem()).getFluidStack(is));

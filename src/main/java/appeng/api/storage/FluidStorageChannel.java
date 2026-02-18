@@ -1,4 +1,4 @@
-package appeng.core.api;
+package appeng.api.storage;
 
 import java.io.IOException;
 
@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
-import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IItemList;
 import appeng.core.AppEng;
@@ -22,9 +21,11 @@ import appeng.fluids.items.FluidDummyItem;
 import appeng.fluids.util.AEFluidStack;
 import appeng.fluids.util.FluidList;
 
-public class FluidStorageChannel implements IFluidStorageChannel {
+public class FluidStorageChannel implements IStorageChannel<IAEFluidStack> {
 
-    public static final IFluidStorageChannel INSTANCE = new FluidStorageChannel();
+    private static final ResourceLocation ID = AppEng.makeId("fluid");
+
+    static final FluidStorageChannel INSTANCE = new FluidStorageChannel();
 
     private FluidStorageChannel() {
     }
@@ -32,7 +33,7 @@ public class FluidStorageChannel implements IFluidStorageChannel {
     @Nonnull
     @Override
     public ResourceLocation getId() {
-        return AppEng.makeId("fluid");
+        return ID;
     }
 
     @Override
@@ -51,21 +52,18 @@ public class FluidStorageChannel implements IFluidStorageChannel {
     }
 
     @Override
-    public IAEFluidStack createStack(Object input) {
-        Preconditions.checkNotNull(input);
+    public IAEFluidStack createStack(ItemStack is) {
+        Preconditions.checkNotNull(is, "is");
 
-        if (input instanceof FluidStack stack) {
-            return AEFluidStack.fromFluidStack(stack);
-        }
-        if (input instanceof ItemStack is) {
-            if (is.getItem() instanceof FluidDummyItem) {
-                return AEFluidStack.fromFluidStack(((FluidDummyItem) is.getItem()).getFluidStack(is));
-            } else {
-                return AEFluidStack.fromFluidStack(FluidUtil.getFluidContained(is));
+        if (is.getItem() instanceof FluidDummyItem) {
+            return AEFluidStack.fromFluidStack(((FluidDummyItem) is.getItem()).getFluidStack(is));
+        } else {
+            FluidStack input = FluidUtil.getFluidContained(is);
+            if (input == null) {
+                return null;
             }
+            return IAEFluidStack.of(input);
         }
-
-        return null;
     }
 
     @Override

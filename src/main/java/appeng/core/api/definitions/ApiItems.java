@@ -124,6 +124,8 @@ public final class ApiItems implements IItems {
 
     private final IItemDefinition dummyFluidItem;
 
+    private final IItemDefinition wrappedGenericStack;
+
     public ApiItems(FeatureFactory registry) {
         FeatureFactory certusTools = registry.features(AEFeature.CERTUS_QUARTZ_TOOLS);
         this.certusQuartzAxe = certusTools
@@ -308,6 +310,8 @@ public final class ApiItems implements IItems {
 
         this.dummyFluidItem = registry.item("dummy_fluid_item", FluidDummyItem::new)
                 .rendering(new FluidDummyItemRendering()).build();
+
+        this.wrappedGenericStack = registry.item("wrapped_generic_stack", WrappedGenericStack::new).build();
     }
 
     @Override
@@ -557,5 +561,10 @@ public final class ApiItems implements IItems {
 
     public IItemDefinition dummyFluidItem() {
         return this.dummyFluidItem;
+    }
+
+    @Override
+    public IItemDefinition wrappedGenericStack() {
+        return this.wrappedGenericStack;
     }
 }

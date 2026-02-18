@@ -31,19 +31,11 @@ import appeng.api.networking.security.IActionSource;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IStorageHelper;
-import appeng.api.storage.StorageChannels;
-import appeng.api.storage.channels.IFluidStorageChannel;
-import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEStack;
 import appeng.crafting.CraftingLink;
 import appeng.util.Platform;
 
 public class ApiStorage implements IStorageHelper {
-
-    public ApiStorage() {
-        StorageChannels.register(IItemStorageChannel.class, ItemStorageChannel.INSTANCE);
-        StorageChannels.register(IFluidStorageChannel.class, FluidStorageChannel.INSTANCE);
-    }
 
     @Override
     public ICraftingLink loadCraftingLink(final NBTTagCompound data, final ICraftingRequester req) {

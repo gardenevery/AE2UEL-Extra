@@ -37,7 +37,7 @@ import appeng.api.storage.IStorageChannel;
 /**
  * List of generic IAEStacks.
  */
-public final class MixedItemList implements Iterable<IAEStack> {
+public final class MixedStackList implements Iterable<IAEStack> {
     private final Map<IStorageChannel<?>, IItemList<?>> lists = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")

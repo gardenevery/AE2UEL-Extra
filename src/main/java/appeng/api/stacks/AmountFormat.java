@@ -21,44 +21,20 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package appeng.api.storage.data;
+package appeng.api.stacks;
 
-import java.util.Collection;
-
-import appeng.api.config.FuzzyMode;
-
-/**
- * Represents a list of items in AE.
- *
- * Don't Implement.
- *
- */
-public interface IItemContainer<T extends IAEStack> {
-
+public enum AmountFormat {
     /**
-     * add a stack to the list, this will merge the stack with an item already in the list if found.
-     *
-     * @param option added stack
+     * Display the full amount.
      */
-    void add(T option); // adds stack as is
-
+    FULL,
     /**
-     * @param i compared item
-     *
-     * @return a stack equivalent to the stack passed in, but with the correct stack size information, or null if its
-     *         not present
+     * Display the summary with the regular font, for example "1.23K" instead of 1234.
      */
-    T findPrecise(T i);
-
+    PREVIEW_REGULAR,
     /**
-     * @param input compared item
-     *
-     * @return a list of relevant fuzzy matched stacks
+     * Display the summary with a large font, for example "1.2K" instead of 1234. Should be shorter than
+     * {@link #PREVIEW_REGULAR} as the font is larger.
      */
-    Collection<T> findFuzzy(T input, FuzzyMode fuzzy);
-
-    /**
-     * @return true if there are no items in the list
-     */
-    boolean isEmpty();
+    PREVIEW_LARGE_FONT
 }

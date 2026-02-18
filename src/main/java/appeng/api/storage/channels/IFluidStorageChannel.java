@@ -26,5 +26,6 @@ package appeng.api.storage.channels;
 import appeng.api.storage.IStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 
+@Deprecated
 public interface IFluidStorageChannel extends IStorageChannel<IAEFluidStack> {
 }

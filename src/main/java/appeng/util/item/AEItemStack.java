@@ -162,16 +162,6 @@ public class AEItemStack extends AEStack<IAEItemStack> implements IAEItemStack {
     }
 
     @Override
-    public boolean isItem() {
-        return true;
-    }
-
-    @Override
-    public boolean isFluid() {
-        return false;
-    }
-
-    @Override
     public IStorageChannel<IAEItemStack> getChannel() {
         return StorageChannels.items();
     }

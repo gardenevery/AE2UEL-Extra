@@ -35,8 +35,8 @@ import appeng.api.config.Upgrades;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
 import appeng.api.parts.IPartCollisionHelper;
+import appeng.api.storage.FluidStorageChannel;
 import appeng.api.storage.StorageChannels;
-import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.util.AECableType;
 import appeng.core.sync.GuiBridge;
 import appeng.fluids.helper.IConfigurableFluidInventory;
@@ -160,7 +160,7 @@ public abstract class PartSharedFluidBus extends PartUpgradeable implements IGri
         return null;
     }
 
-    protected IFluidStorageChannel getChannel() {
+    protected FluidStorageChannel getChannel() {
         return StorageChannels.fluids();
     }
 

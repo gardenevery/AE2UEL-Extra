@@ -119,4 +119,6 @@ public interface IItems {
     AEColoredItemDefinition coloredPaintBall();
 
     AEColoredItemDefinition coloredLumenPaintBall();
+
+    IItemDefinition wrappedGenericStack();
 }
